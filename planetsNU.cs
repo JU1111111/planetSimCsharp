@@ -112,7 +112,7 @@ namespace planetSim
             }
             DateTime end = DateTime.UtcNow;
             TimeSpan timeDiff = end - start;
-            Console.WriteLine(Convert.ToInt32(timeDiff.TotalMilliseconds));
+            Console.WriteLine(Convert.ToInt32(timeDiff.TotalSeconds));
         }
 
     }
