@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Numpy.Bare" Version="3.8.1.28" />
     <PackageReference Include="NumSharp" Version="0.30.0" />
   </ItemGroup>
 
