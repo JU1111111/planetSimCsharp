@@ -1,6 +1,6 @@
 ﻿using NumSharp;
 
-
+//yeeeeeeeeeeeee
 namespace planetSim
 {
     internal class Planet
