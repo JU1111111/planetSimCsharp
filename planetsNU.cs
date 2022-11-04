@@ -1,59 +1,66 @@
 ﻿using NumSharp;
+using MathNet.Numerics.LinearAlgebra;
 
 
+//yeeeeeeeeeeeee
 namespace planetSim
 {
     internal class Planet
     {
+        static readonly double[] f = new double[] { 0, 0 };
         public double mass;
-        public NumSharp.NDArray pos;
-        public NumSharp.NDArray vel;
-        public NumSharp.NDArray force = 0;
-        public List<NumSharp.NDArray> forcelist = new();
+        public Vector<double> pos;
+        public Vector<double> vel;
+        public Vector<double> force = Vector<double>.Build.DenseOfArray(f);
+        public List<Vector<double>> forcelist = new();
         public int? iD;
         public List<Double> xPoslist = new();
         public List<Double> yPoslist = new();
 
-        public Planet(double m, NumSharp.NDArray position, NDArray vel)
+        public Planet(double m, double[] position, double[] vel)
         {
             this.mass = m;
-            this.pos = position;
-            this.vel = vel;
+            this.pos = Vector<double>.Build.DenseOfArray(position);
+            this.vel = Vector<double>.Build.DenseOfArray(vel);
         }
 
         public void CalcFTo(Planet pl)
         {
             double gamma = 6.673 * Math.Pow(10, -11);
-            NumSharp.NDArray rvec = this.pos - pl.pos;
-            NumSharp.NDArray rsqt = NumSharp.np.power(rvec, 2);
-            NumSharp.NDArray rVal = rsqt[0] + rsqt[1];
+            Vector<double> rvec = this.pos - pl.pos;
+            double rVal = rvec.L2Norm();
             //double rVal = np.linalg.norm(rvec);
-            NDArray Fg = gamma * (pl.mass * this.mass / Math.Pow(rVal, 3)) * rvec;
+            //Vector<double> Fg = (-1) * gamma * (pl.mass * this.mass / Math.Pow(rVal, 3)) * rvec;
+            Vector<double> Fg = ((-gamma) * this.mass * pl.mass / Math.Pow(rVal, 2)) * 1 / rVal * rvec;
             this.forcelist.Add(Fg);
-            pl.forcelist.Add(-1 * Fg);
+            //pl.forcelist.Add(-1 * Fg);
         }
 
-        public void CalFToListAndAdd(Planet[] plList)
+        public void CalFToList(Planet[] plList)
         {
-            for (int i = 0; i < plList.Length; i++)
+            foreach (Planet pl in plList)
             {
-                Planet pl = plList[i];
                 if (pl.iD != this.iD)
                 {
                     CalcFTo(pl);
                 }
             }
-            foreach (NumSharp.NDArray f in this.forcelist)
+
+        }
+        public void sumOfF()
+        {
+            foreach (Vector<double> f in this.forcelist)
             {
                 force += f;
             }
+
         }
 
         public void CalcPosAndVel(double dT)
         {
-            NumSharp.NDArray a = this.force / this.mass;
-            NumSharp.NDArray newPos = 1 / 2 * a * Math.Pow(dT, 2) + this.vel * dT + this.pos;
-            NumSharp.NDArray newVel = a * dT + this.vel;
+            Vector<double> a = this.force / this.mass;
+            Vector<double> newPos = 1 / 2 * a * Math.Pow(dT, 2) + this.vel * dT + this.pos;
+            Vector<double> newVel = a * dT + this.vel;
 
             this.pos = newPos;
             this.vel = newVel;
@@ -64,7 +71,7 @@ namespace planetSim
     internal class Universe
     {
         public Planet[] planets;
-
+        public int iD = 0;
         public Universe(Planet[] planets)
         {
             this.planets = planets;
@@ -72,20 +79,30 @@ namespace planetSim
 
         public bool CalcFAndSum()
         {
+            /*
             for (int i = 0; i < this.planets.Length / 2; i++)
             {
                 Planet pl = this.planets[i];
-                pl.CalFToListAndAdd(this.planets);
+            }*/
+            foreach (Planet pl in this.planets)
+            {
+                pl.CalFToList(this.planets);
+
+            }
+            foreach(Planet pl in this.planets)
+            {
+                pl.sumOfF();
+                //Console.WriteLine(pl.iD);
             }
             return true;
         }
 
         public void AddPlanetIds()
         {
-            for (int i = 0; i < this.planets.Length; i++)
+            foreach (Planet pl in this.planets)
             {
-                Planet pl = planets[i];
-                pl.iD = i;
+                pl.iD = this.iD;
+                this.iD++;
             }
         }
 
