@@ -22,7 +22,7 @@ namespace planetSim
             Vector<double> v = V.DenseOfArray(testar);
             Vector<double> b = V.DenseOfArray(testar2);
 
-            Vector<double> c = Vector<double>.Abs(v);
+            double c = v.L2Norm();
 
             Console.WriteLine(v);
             Console.WriteLine(b);
