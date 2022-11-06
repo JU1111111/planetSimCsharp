@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace planetSim
+namespace planetSim.oldstuff
 {
     internal class Planet2
     {
@@ -20,8 +20,8 @@ namespace planetSim
 
         public Planet2(double[] inPos, double[] inVel, double mass)
         {
-            this.pos = Vector<double>.Build.DenseOfArray(inPos);
-            this.vel = Vector<double>.Build.DenseOfArray(inVel);
+            pos = Vector<double>.Build.DenseOfArray(inPos);
+            vel = Vector<double>.Build.DenseOfArray(inVel);
             this.mass = mass;
 
         }
@@ -30,9 +30,9 @@ namespace planetSim
         {
             foreach (Planet2 pl in planets)
             {
-                if (pl.iD != this.iD)
+                if (pl.iD != iD)
                 {
-                    Vector<double> rvec = this.pos - pl.pos;
+                    Vector<double> rvec = pos - pl.pos;
                     double r = rvec.L2Norm();
                 }
             }
