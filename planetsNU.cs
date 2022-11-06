@@ -7,11 +7,10 @@ namespace planetSim
 {
     internal class Planet
     {
-        static readonly double[] f = new double[] { 0, 0 };
         public double mass;
         public Vector<double> pos;
         public Vector<double> vel;
-        public Vector<double> force = Vector<double>.Build.DenseOfArray(f);
+        public Vector<double> force = Vector<double>.Build.DenseOfArray(new double[] { 0, 0 });
         public List<Vector<double>> forcelist = new();
         public int? iD;
         public List<Double> xPoslist = new();
@@ -28,7 +27,7 @@ namespace planetSim
 
         public void CalcFTo(Planet pl)
         {
-            double gamma = 6.673 * Math.Pow(10, -11);
+            double gamma = 6.6743 * 1e-11;
             Vector<double> rvec = this.pos - pl.pos;
             double rVal = rvec.L2Norm();
             //Console.WriteLine(rVal);
@@ -64,20 +63,19 @@ namespace planetSim
         {
             //this.vlist.Add(vel);
             Vector<double> a = this.force / this.mass;
-            Vector<double> newPos = 1 / 2 * a * Math.Pow(dT, 2) + (this.vel * dT) + this.pos;
             Vector<double> newVel = a * dT + this.vel;
+            Vector<double> newPos = 1 / 2 * a * Math.Pow(dT, 2) + (this.vel * dT) + this.pos;
 
 
             this.pos = newPos;
             this.vel = newVel;
-
         }
     }
-    internal class Universe
+    internal class UniverseOld
     {
         public Planet[] planets;
         public int iD = 0;
-        public Universe(Planet[] planets)
+        public UniverseOld(Planet[] planets)
         {
             this.planets = planets;
         }
@@ -115,7 +113,7 @@ namespace planetSim
         public void SimThisshit(double minT, double maxT, double dT)
         {
             DateTime start = DateTime.UtcNow;
-            int steps = Convert.ToInt32(maxT / dT);
+            long steps = Convert.ToInt64(maxT / dT);
             Console.WriteLine(steps);
             
             for (int i = 0; i < steps; i++)
