@@ -13,7 +13,8 @@ namespace planetSim
         public Vector<double> Acc = Vector<double>.Build.Dense(new double[2]);
         public Vector<double> Vel= Vector<double>.Build.Dense(new double[2]);
         public Vector<double> Pos = Vector<double>.Build.Dense(new double[2]);
-        public double Mass { get; set; }
+        public double Mass;
+        public int? iD;
         public CelestialBody(double[] vel, double[] pos, double mass)
         {
             Vel = Vector<double>.Build.Dense(vel);

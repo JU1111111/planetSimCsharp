@@ -11,7 +11,8 @@ namespace planetSim
 {
     public class Universe
     {
-        public List<CelestialBody> CelestialBodies { get; set; }
+        public List<CelestialBody> CelestialBodies;
+        public bool error = false;
         public Universe()
         {
             CelestialBodies = new List<CelestialBody>();
@@ -24,17 +25,36 @@ namespace planetSim
 
         private Vector<double> CalcGravForce(CelestialBody c1, CelestialBody c2)
         {
-            var r = (c1.Pos - c2.Pos);
-            double rMag = r.L2Norm();
-            if (Math.Abs(rMag) < 0.1)
-                return Vector<double>.Build.Dense(new double[2] { 0, 0 });
-            r /= rMag;
-            return ((-Constants.GravConst) * c1.Mass * c2.Mass) / (rMag * rMag) * r;
+            if (c1.iD != c2.iD)
+            {
+
+
+                var r = (c1.Pos - c2.Pos);
+                double rMag = r.L2Norm();
+                if (Math.Abs(rMag) < 0.1)
+                {
+                    error = true;
+                    return Vector<double>.Build.Dense(new double[2] { 0, 0 });
+                }
+                r /= rMag;
+                return ((-Constants.GravConst) * c1.Mass * c2.Mass) / (rMag * rMag) * r;
+            }
+            return Vector<double>.Build.Dense(new double[2] { 0, 0 }); ;
         }
 
+        private void makeIDs()
+        {
+            int id = 0;
+            foreach (CelestialBody CB in CelestialBodies)
+            {
+                CB.iD = id++;
+            }
+        }
         public List<List<double[]>> Simulate(double maxT, double dT, int skip= 100)
         {
             List<List<double[]>> PosList = new List<List<double[]>>();
+            Console.WriteLine("Making IDs");
+            this.makeIDs();
 
 
 
@@ -83,7 +103,14 @@ namespace planetSim
                         // only plot every 100000 steps and dont plot twice:
                         if (i % 100000 == 0 && idx == 0)
                         {
-                            Console.WriteLine($"currently at step {i}/{steps} ({(float)i / (float)steps * 100.0}%)");
+                            if (this.error)
+                            {
+                                Console.WriteLine($"currently at step {i}/{steps} ({(float)i / (float)steps * 100.0} %) ERROR OCCURRED");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"currently at step {i}/{steps} ({(float)i / (float)steps * 100.0} %)");
+                            }
                         }
                     }
                     idx++;
